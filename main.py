@@ -1,5 +1,7 @@
 import numpy as np
 
+players_count = 9
+
 #built card deck by using dictionary
 deck = {'2':['H','C','S','D'], '3':['H','C','S','D'], '4':['H','C','S','D'],
         '5':['H','C','S','D'], '6':['H','C','S','D'], '7':['H','C','S','D'],
@@ -26,14 +28,15 @@ def drawing_process():
 
     return [chosen_number, chosen_color]
 
+
+
+
+
+# player_one = [drawing_process(), drawing_process()]
+# player_two = [drawing_process(), drawing_process()]
+
+
 #convert numbers to correct card figures (J,Q,K,A)
-
-
-#draw player and board cards
-player_one = [drawing_process(), drawing_process()]
-player_two = [drawing_process(), drawing_process()]
-board = [drawing_process(), drawing_process(), drawing_process(), drawing_process(), drawing_process()]
-
 def change_figures(list_cards):
     new_list_cards = list_cards
     for list in new_list_cards:
@@ -48,9 +51,22 @@ def change_figures(list_cards):
                 list[num] = "A"
     return
 
-print("Player 1: "+ str(change_figures(player_one))) # str(player_one))
-print("Player 2: "+ str(change_figures(player_two)))
-print("Board: FLOP = " + str(change_figures(board[0:3]))+", TURN = " + str(change_figures(board[3:4])) + ", RIVER = " + str(change_figures(board[4:5])))
+
+class Player(object):
+    def __init__(self, cards):
+        self.cards = [drawing_process(), drawing_process()]
+
+players = []
+
+#draw all players and board cards
+for i in range(players_count):
+    players.append(Player(i))
+
+board = [drawing_process(), drawing_process(), drawing_process(), drawing_process(), drawing_process()]
+
+print("Player 1: "+ str(players[0].cards)) # str(player_one))
+print("Player 2: "+ str(players[1].cards))
+print("Board: FLOP = " + str(board[0:3])+", TURN = " + str(board[3:4]) + ", RIVER = " + str(board[4:5]))
 
 
 # if __name__ == '__main__':
