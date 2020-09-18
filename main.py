@@ -1,4 +1,5 @@
 import numpy as np
+from collections import Counter
 
 players_count = 9
 
@@ -17,23 +18,32 @@ def drawing_process():
     def random_number():
         return str(np.random.randint(2, len(numbers)+2))
 
-    chosen_number = random_number()
+    #try to draw figure
+    chosen_number = None
+    while chosen_number is None:
+        try:
+            chosen_number = random_number()
+        except Exception:
+            print(Exception)
+
     numbers_length = len(deck.get(chosen_number))
 
     def random_color():
         return np.random.randint(0, numbers_length)
 
-    chosen_color = deck.get(chosen_number)[random_color()]
+    #try to draw color
+    drawn_color = None
+    while drawn_color is None:
+        try:
+            drawn_color = random_color()
+        except Exception:
+            print(Exception)
+
+    chosen_color = deck.get(chosen_number)[drawn_color]
     deck[str(chosen_number)].remove(chosen_color)
 
     return [chosen_number, chosen_color]
 
-
-
-
-
-# player_one = [drawing_process(), drawing_process()]
-# player_two = [drawing_process(), drawing_process()]
 
 
 #convert numbers to correct card figures (J,Q,K,A)
@@ -63,6 +73,54 @@ for i in range(players_count):
     players.append(Player(i))
 
 board = [drawing_process(), drawing_process(), drawing_process(), drawing_process(), drawing_process()]
+
+def evaluate_cards(player_cards):
+    board_and_player = board + player_cards
+    bap_zip = list(zip(*board_and_player))
+    bap_sorted = sorted(list(bap_zip), key = lambda x: x[0])
+
+    print(bap_sorted)
+    print(res)
+    figures = list(bap_zip[0])
+    colors = list(bap_zip[1])
+
+    final_result = []
+
+    def fig_freq():
+        return Counter(figures)
+
+    def col_freq():
+        return Counter(colors)
+
+    def one_pair():
+        one_pair_check = [key for (key, value) in fig_freq().items() if value == 2]
+        if len(one_pair_check) == 1:
+            return [2,one_pair_check[0], figures.sort(reverse=True)]
+
+    def two_pairs():
+        two_pairs_check = [key for (key, value) in fig_freq().items() if value == 2]
+        if len(two_pairs_check) == 2:
+            return [3, [two_pairs_check[0],two_pairs_check[1]], figures.sort(reverse=True)]
+        elif len(two_pairs_check) == 3:
+            return [3, [two_pairs_check[0],two_pairs_check[1],two_pairs_check[2]], figures.sort(reverse=True)]
+
+
+    print(two_pairs())
+    print(one_pair())
+    print(col_freq())
+
+print(evaluate_cards(players[0].cards))
+
+
+
+
+
+
+
+
+
+
+
 
 print("Player 1: "+ str(players[0].cards)) # str(player_one))
 print("Player 2: "+ str(players[1].cards))
