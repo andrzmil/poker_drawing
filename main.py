@@ -51,13 +51,13 @@ def change_figures(list_cards):
     new_list_cards = list_cards
     for list in new_list_cards:
         for num, element in enumerate(list):
-            if element == "11":
+            if element == 11:
                 list[num] = "J"
-            if element == "12":
+            if element == 12:
                 list[num] = "Q"
-            if element == "13":
+            if element == 13:
                 list[num] = "K"
-            if element == "14":
+            if element == 14:
                 list[num] = "A"
     return
 
@@ -75,6 +75,12 @@ for i in range(players_count):
 board = [drawing_process(), drawing_process(), drawing_process(), drawing_process(), drawing_process()]
 
 def evaluate_cards(player_cards):
+    #general rule in final result var:
+    #1st value denotes power of cards
+    #2nd value denotes mathing
+    #3rd value denotes best combination + kickers, etc.
+    #4th value denotes sum of cards taken into account, calculated for final comparison
+
     board_and_player = board + player_cards
     board_and_player.sort(key=lambda x: x[0], reverse=True)
     bap_zip = list(zip(*board_and_player))
@@ -83,7 +89,7 @@ def evaluate_cards(player_cards):
 
     figures = list(bap_zip[0])
     colors = list(bap_zip[1])
-
+    print(colors)
     final_result = []
 
     def fig_freq():
@@ -92,11 +98,30 @@ def evaluate_cards(player_cards):
     def col_freq():
         return Counter(colors)
 
+    def four_of_a_kind():
+        four_of_a_kind_check = [key for (key, value) in fig_freq().items() if value == 4]
+        if len(four_of_a_kind_check) == 1:
+            return [8, four_of_a_kind_check[0], figures[:5], sum(figures[:5])]
+
+    def flush():
+        flush_check = [key for key, value in col_freq().items() if value >= 5]
+        if len(flush_check) > 0:
+            # get position of cards with the same color
+            indices = [x for x, y in enumerate(colors) if y == flush_check[0]]
+            top_five_fig_color = [figures[i] for i in indices][:5]
+            for j in range(3):
+                if figures[j] != figures[j + 4] + 4:
+                    return [6, top_five_fig_color, board_and_player, sum(top_five_fig_color)]
+
     def straight():
         low_straight = [2,3,4,5,14]
         for i in range(3):
-            if figures[i] == figures[i+4]+4:
+            if figures[i] == figures[i+4]+4 and np.unique(figures[i:i+4]).size == 5:
                 return [5, figures[i:i+5], figures, sum(figures[i:i+5])]
+            #consider low straight from Ace to 5
+            elif all(item in low_straight for item in figures):
+                return [5, [14,2,3,4,5], figures, 15]
+
 
     def three_of_a_kind():
         three_of_a_kind_check = [key for (key, value) in fig_freq().items() if value == 3]
@@ -115,11 +140,15 @@ def evaluate_cards(player_cards):
     def one_pair():
         one_pair_check = [key for (key, value) in fig_freq().items() if value == 2]
         if len(one_pair_check) == 1:
+            #get top pair with kickers
+
             return [2,one_pair_check[0], figures[:5],sum(figures[:5])]
 
     def high_card():
-        return [1, figures, figures[:5], sum(figures[:5])]
+        return [1, figures, bap_zip[:5], sum(figures[:5])]
 
+    print(four_of_a_kind())
+    print(flush())
     print(straight())
     print(three_of_a_kind())
     print(two_pairs())
