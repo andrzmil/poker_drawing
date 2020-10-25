@@ -3,7 +3,7 @@ from collections import Counter
 
 players_count = 9
 
-#built card deck by using dictionary
+
 deck = {2:['H','C','S','D'], 3:['H','C','S','D'], 4:['H','C','S','D'],
         5:['H','C','S','D'], 6:['H','C','S','D'], 7:['H','C','S','D'],
         8:['H','C','S','D'], 9:['H','C','S','D'], 10:['H','C','S','D'],
@@ -12,11 +12,13 @@ deck = {2:['H','C','S','D'], 3:['H','C','S','D'], 4:['H','C','S','D'],
 
 def drawing_process():
     #defines how many numbers are currently in deck
-    numbers = deck.keys()
+
 
     #draw number which represent number in deck
     def random_number():
-        return np.random.randint(2, len(numbers)+2)
+        return np.random.choice(list(deck.keys()))
+        #return np.random.randint(2, len(numbers)+2)
+
 
     #try to draw figure
     chosen_number = None
@@ -26,7 +28,10 @@ def drawing_process():
         except Exception:
             print(Exception)
 
+    print(len(deck.get(chosen_number)))
+
     numbers_length = len(deck.get(chosen_number))
+    
 
     def random_color():
         return np.random.randint(0, numbers_length)
@@ -39,12 +44,26 @@ def drawing_process():
         except Exception:
             print(Exception)
 
+ 
+
     chosen_color = deck.get(chosen_number)[drawn_color]
-    deck[chosen_number].remove(chosen_color)
+    #remove value or key
+    if numbers_length > 1:
+        deck[chosen_number].remove(chosen_color)
+    else:
+        deck[chosen_number].remove(chosen_color)
+        deck.pop(chosen_number, None)
 
     return [chosen_number, chosen_color]
 
-
+# for i in range(50):
+#     try:
+#         print(i)
+#         print(drawing_process())
+        
+#     except Exception:
+#         print(Exception)
+    
 
 #convert numbers to correct card figures (J,Q,K,A)
 def change_figures(list_cards):
